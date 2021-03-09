@@ -26,7 +26,7 @@ sub process_search ( $search_string ) {
     $line =~ s/^\s+|\s+$//g;
     next if( not $line =~ /([0-9a-fA-F:\:\-\.]{12,17})/ );
     my $mac = $1;
-    my @chars = $mac =~ m/([0-9a-fA-F])/g;
+    next if( not my @chars = $mac =~ m/([0-9a-fA-F])/g );
     my $mac_string = substr( uc(join('', @chars)) , 0, 6 );
     push @$return_list, [( $mac, $mac_hash->{$mac_string} )];
   }
