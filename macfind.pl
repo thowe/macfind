@@ -13,15 +13,36 @@ my $csv = Text::CSV->new ({
 });
 
 my $mac_hash = {};
-open( my $dfh, "<", 'oui.csv');
+open( my $dfh, "<", 'oui.csv') or die "Can't open oui.csv file for reading";
 while( my $fields = $csv->getline( $dfh ) ) {
     $mac_hash->{$fields->[1]} = $fields->[2];
 }
 close($dfh);
 
-get '/' => sub($c) {
-  $c->stash( 'temp_text' => 'The Mac 50579C belongs to ' .
-                      $mac_hash->{'50579C'} );
+sub process_search ( $search_string ) {
+  my @splitstring = split(/^/, $search_string);
+  my $return_list = [];
+  for my $line (@splitstring) {
+    $line =~ s/^\s+|\s+$//g;
+    next if( not $line =~ /([0-9a-fA-F:\:\-\.]{12,17})/ );
+    my $mac = $1;
+    my @chars = $mac =~ m/([0-9a-fA-F])/g;
+    my $mac_string = substr( uc(join('', @chars)) , 0, 6 );
+    push @$return_list, [( $mac, $mac_hash->{$mac_string} )];
+  }
+  return $return_list;
+};
+
+any ['GET', 'POST' ] => '/' => sub($c) {
+
+  if( uc($c->req->method) eq 'POST' ) {
+    #$c->stash( 'results' => $c->param('searchdata') );
+    $c->stash( 'results' => process_search( $c->param('searchdata') ) );
+  }
+  else {
+    $c->stash( 'results' => '' );
+  }
+
   $c->render(template => 'default');
 };
 
@@ -38,21 +59,36 @@ __DATA__
 
 <div class="form" name="search-div" id="search-div"
      style="width: 50%">
-<form action="" method="post">
+<form action="<%= $c->url_for('/') %>" method="POST">
   <div class="form" name="search-div" id="search-div">
     <div class="field">
       <label class="label">MAC Addresses</label>
       <div class="control">
-        <textarea class="textarea"
+        <textarea class="textarea" name="searchdata" id="searchdata"
                   style="width: 80%;
                   overflow-y: scroll;
                   height: 140px"></textarea>
       </div>
     </div>
+    <div class="field">
+      <div class="control">
+        <button class="button is-link"
+                id="searchbutton" name="searchbutton" value="Search"
+                >Submit</button>
+      </div>
+    </div>
   </div>
 </form>
 
-<p><%= $temp_text %><p>
+% if( $results ) {
+<div class="plaintext" id="searchresults" name="searchresults">
+<p>
+% foreach my $result (@$results) {
+<%= @$result[0] %>: <%= @$result[1] %><br/>
+% }
+<p>
+</div>
+% }
 
 @@ layouts/default.html.ep
 <!doctype html>
@@ -66,6 +102,9 @@ __DATA__
 
 <body>
 <%= content %>
+<div id="footer">
+<p>Free Hong Kong!</p>
+</div>
 </body>
 
 </html>
