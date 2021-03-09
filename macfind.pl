@@ -46,8 +46,6 @@ any ['GET', 'POST' ] => '/' => sub($c) {
   $c->render(template => 'default');
 };
 
-
-
 app->start;
 
 __DATA__
