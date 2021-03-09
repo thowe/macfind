@@ -12,18 +12,26 @@ my $csv = Text::CSV->new ({
   auto_diag => 1,
 });
 
+# The file from ieee
+my $oui_file = 'oui.csv';
+
+# Open the csv file with the MAC organization data and read it into
+# a hash for easy searching later.
 my $mac_hash = {};
-open( my $dfh, "<", 'oui.csv') or die "Can't open oui.csv file for reading";
+open( my $dfh, "<", $oui_file) or die "Can't open $oui_file file for reading";
 while( my $fields = $csv->getline( $dfh ) ) {
     $mac_hash->{$fields->[1]} = $fields->[2];
 }
 close($dfh);
 
+# process_search takes the text entered into the web form to be split into
+# individual lines, extract anything that looks like a MAC address, find its
+# first 6 digits, search the $mac_hash structure for each one, and push them
+# into an array for display on the web tool page.
 sub process_search ( $search_string ) {
   my @splitstring = split(/^/, $search_string);
   my $return_list = [];
   for my $line (@splitstring) {
-    $line =~ s/^\s+|\s+$//g;
     next if( not $line =~ /([0-9a-fA-F:\:\-\.]{12,17})/ );
     my $mac = $1;
     next if( not my @chars = $mac =~ m/([0-9a-fA-F])/g );
@@ -33,6 +41,8 @@ sub process_search ( $search_string ) {
   return $return_list;
 };
 
+# A simple get just displayes the form.
+# A post displays the form with the results from the last request under it.
 any ['GET', 'POST' ] => '/' => sub($c) {
 
   if( uc($c->req->method) eq 'POST' ) {
