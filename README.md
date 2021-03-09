@@ -2,6 +2,9 @@
 Web based tool to do MAC address organization lookups instead of using a remote
 site.  You can easily run this locally.
 
+This is a Mojolicious::Lite application...  You can run this like any other
+such program.  See https://docs.mojolicious.org/Mojolicious/Guides/Tutorial
+
 This uses public registry data which can be downloaded from the IEEE
 here: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html
 
