@@ -5,6 +5,7 @@
 #
 
 use Mojolicious::Lite -signatures;
+use Mojo::File 'curfile';
 use Text::CSV;
 
 my $csv = Text::CSV->new ({
@@ -13,7 +14,7 @@ my $csv = Text::CSV->new ({
 });
 
 # The file from ieee
-my $oui_file = 'oui.csv';
+my $oui_file = curfile->sibling('oui.csv');
 
 # Open the csv file with the MAC organization data and read it into
 # a hash for easy searching later.
@@ -34,7 +35,7 @@ sub process_search ( $search_string ) {
   for my $mac (map /([0-9a-fA-F:\:\-\.]{12,17})/, @splitstring) {
     next unless my @chars = $mac =~ m/([0-9a-fA-F])/g;
     my $mac_string = substr( uc(join('', @chars)) , 0, 6 );
-    push @ret_list, [( $mac, $mac_hash->{$mac_string} )];
+    push @ret_list, [ $mac, $mac_hash->{$mac_string} ];
   }
   return \@ret_list;
 };
