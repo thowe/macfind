@@ -30,15 +30,13 @@ close($dfh);
 # into an array for display on the web tool page.
 sub process_search ( $search_string ) {
   my @splitstring = split(/^/, $search_string);
-  my $return_list = [];
-  for my $line (@splitstring) {
-    next if( not $line =~ /([0-9a-fA-F:\:\-\.]{12,17})/ );
-    my $mac = $1;
-    next if( not my @chars = $mac =~ m/([0-9a-fA-F])/g );
+  my @ret_list;
+  for my $mac (map /([0-9a-fA-F:\:\-\.]{12,17})/, @splitstring) {
+    next unless my @chars = $mac =~ m/([0-9a-fA-F])/g;
     my $mac_string = substr( uc(join('', @chars)) , 0, 6 );
-    push @$return_list, [( $mac, $mac_hash->{$mac_string} )];
+    push @ret_list, [( $mac, $mac_hash->{$mac_string} )];
   }
-  return $return_list;
+  return \@ret_list;
 };
 
 # A simple get just displayes the form.
