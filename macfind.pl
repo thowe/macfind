@@ -32,7 +32,7 @@ close($dfh);
 sub process_search ( $search_string ) {
   my @splitstring = split(/^/, $search_string);
   my @ret_list;
-  for my $mac (map /([0-9a-fA-F:\:\-\.]{12,17})/, @splitstring) {
+  for my $mac (map /([0-9a-fA-F\:\-\.]{12,17})/, @splitstring) {
     next unless my @chars = $mac =~ m/([0-9a-fA-F])/g;
     my $mac_string = substr( uc(join('', @chars)) , 0, 6 );
     push @ret_list, [ $mac, $mac_hash->{$mac_string} ];
