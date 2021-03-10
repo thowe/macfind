@@ -41,16 +41,12 @@ sub process_search ( $search_string ) {
 
 # A simple get just displayes the form.
 # A post displays the form with the results from the last request under it.
-any ['GET', 'POST' ] => '/' => sub($c) {
+get '/' => sub($c) {
+  $c->render(template => 'default');
+};
 
-  if( uc($c->req->method) eq 'POST' ) {
-    #$c->stash( 'results' => $c->param('searchdata') );
-    $c->stash( 'results' => process_search( $c->param('searchdata') ) );
-  }
-  else {
-    $c->stash( 'results' => '' );
-  }
-
+post '/' => sub($c) {
+  $c->stash('results' => process_search( $c->param('searchdata') ));
   $c->render(template => 'default');
 };
 
@@ -86,7 +82,7 @@ __DATA__
   </div>
 </form>
 
-% if( $results ) {
+% if( my $results = stash('results') ) {
 <div class="plaintext" id="searchresults" name="searchresults">
 <p>
 % foreach my $result (@$results) {
