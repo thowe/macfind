@@ -8,17 +8,10 @@ use Mojolicious::Lite -signatures;
 use Mojo::File 'curfile';
 use Text::CSV qw( csv );
 
-#my $csv = Text::CSV->new ({
-#  binary    => 1,
-#  auto_diag => 1,
-#});
-
 # The file from ieee
 my $oui_file = curfile->sibling('oui.csv');
-open( my $dfh, "<", $oui_file) or die "Can't open $oui_file file for reading";
-my $mac_hash = csv(in => $dfh, key => 'Assignment',
-                               value => 'Organization Name');
-close($dfh);
+my $mac_hash = csv(in => "$oui_file", key => 'Assignment',
+                                      value => 'Organization Name');
 
 # process_search takes the text entered into the web form to be split into
 # individual lines, extract anything that looks like a MAC address, find its
@@ -35,8 +28,6 @@ sub process_search ( $search_string ) {
   return \@ret_list;
 };
 
-# A simple get just displayes the form.
-# A post displays the form with the results from the last request under it.
 get '/' => sub($c) {
   $c->render(template => 'default');
 };
