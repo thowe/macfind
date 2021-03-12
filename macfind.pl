@@ -6,23 +6,18 @@
 
 use Mojolicious::Lite -signatures;
 use Mojo::File 'curfile';
-use Text::CSV;
+use Text::CSV qw( csv );
 
-my $csv = Text::CSV->new ({
-  binary    => 1,
-  auto_diag => 1,
-});
+#my $csv = Text::CSV->new ({
+#  binary    => 1,
+#  auto_diag => 1,
+#});
 
 # The file from ieee
 my $oui_file = curfile->sibling('oui.csv');
-
-# Open the csv file with the MAC organization data and read it into
-# a hash for easy searching later.
-my $mac_hash = {};
 open( my $dfh, "<", $oui_file) or die "Can't open $oui_file file for reading";
-while( my $fields = $csv->getline( $dfh ) ) {
-    $mac_hash->{$fields->[1]} = $fields->[2];
-}
+my $mac_hash = csv(in => $dfh, key => 'Assignment',
+                               value => 'Organization Name');
 close($dfh);
 
 # process_search takes the text entered into the web form to be split into
