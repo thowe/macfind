@@ -1,5 +1,10 @@
 #!/usr/bin/env perl
 #
+# Copyright (c) 2021 Timothy Howe
+# This file is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+
+#
 # Expects "MAC Address Block Large (MA-L)" csv file from
 # https://regauth.standards.ieee.org/standards-ra-web/pub/view.html
 #
