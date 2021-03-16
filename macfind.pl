@@ -13,8 +13,10 @@ use Mojolicious::Lite -signatures;
 use Mojo::File 'curfile';
 use Text::CSV qw( csv );
 
+my $local_data_file = 'oui.csv';
+
 # The file from ieee
-my $oui_file = curfile->sibling('oui.csv');
+my $oui_file = curfile->sibling($local_data_file);
 my $mac_hash = csv(in => "$oui_file", key => 'Assignment',
                                       value => 'Organization Name');
 
