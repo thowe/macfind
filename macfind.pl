@@ -78,11 +78,11 @@ __DATA__
 
 % if( my $results = stash('results') ) {
 <div class="plaintext" id="searchresults" name="searchresults">
-<p>
+<pre style="font-family: monospace">
 % foreach my $result (@$results) {
-<%= @$result[0] %>: <%= @$result[1] %><br/>
+<%= @$result[0] %>  <%= @$result[1] %>
 % }
-<p>
+</pre>
 </div>
 % }
 
